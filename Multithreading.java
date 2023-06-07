@@ -1,61 +1,34 @@
-// Define a message class for passing messages between threads
-class Message {
-    private String content;
 
-    public synchronized String getContent() {
-        return content;
-    }
-
-    public synchronized void setContent(String content) {
-        this.content = content;
+public class  Multithreading 
+    {
+    public static void main(String[] args) {
+        // Create two threads
+        Thread thread1 = new Thread(new MyRunnable(), "Thread 1");
+        Thread thread2 = new Thread(new MyRunnable(), "Thread 2");
+        
+        // Start the threads
+        thread1.start();
+        thread2.start();
     }
 }
 
-public class A4 {
-    public static void main(String[] args) {
-        // Create a shared message object
-        final Message message = new Message();
-
-        // Create the first thread
-        Thread t1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Loop to receive messages and send replies
-                for (int i = 0; i < 10; i++) {
-                    String received = message.getContent();
-                    System.out.println("Thread 1 received message: " + received);
-                    String reply = "Message " + i + " received";
-                    message.setContent(reply);
-                    System.out.println("Thread 1 sent reply: " + reply);
-                }
-            }
-        });
-
-        // Create the second thread
-        Thread t2 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Loop to send messages and receive replies
-                for (int i = 0; i < 10; i++) {
-                    String messageText = "Message " + i;
-                    message.setContent(messageText);
-                    System.out.println("Thread 2 sent message: " + messageText);
-                    String received = message.getContent();
-                    System.out.println("Thread 2 received reply: " + received);
-                }
-            }
-        });
-
-        // Start both threads
-        t1.start();
-        t2.start();
-
-        // Wait for both threads to finish before exiting
+class MyRunnable implements Runnable {
+    @Override
+    public void run() {
         try {
-            t1.join();
-            t2.join();
+            // Sleep for a random amount of time (between 1 and 5 seconds)
+            int sleepTime = (int) (Math.random() * 4000) + 1000;
+            System.out.println(Thread.currentThread().getName() + " sleeping for " + sleepTime + " milliseconds.");
+            Thread.sleep(sleepTime);
+            
+            // Do some work
+            int sum = 0;
+            for (int i = 1; i <= 10; i++) {
+                sum += i;
+            }
+            System.out.println(Thread.currentThread().getName() + " calculated sum = " + sum);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println(Thread.currentThread().getName() + " was interrupted.");
         }
     }
 }
